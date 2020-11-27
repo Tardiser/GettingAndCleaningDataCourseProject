@@ -5,4 +5,6 @@
 
 * Basic explanations of the codeblocks are presented in the *run_analysis.R* script.
 
+* A codebook describing the variables in the *run_analysis.R* script is presented.
+
 * Output of the script is a tidy dataset named *samsungTidied.txt* which can be found in this repo.
