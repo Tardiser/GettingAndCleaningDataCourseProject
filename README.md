@@ -7,4 +7,4 @@
 
 * A codebook describing the variables in the *run_analysis.R* script is presented.
 
-* Output of the script is a tidy dataset named *samsungTidied.txt* which can be found in this repo.
+* Output of the script is a tidy dataset named *samsungTidied.txt* which can be created by running the script with the appropriate files.
