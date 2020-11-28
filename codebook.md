@@ -1,6 +1,6 @@
 ### This codebook explains the variables used in the run_analysis script.
 
-- **X_train, X_test, y_train, y_test**: Original imported text files with the same name.
+- **X_train, X_test, y_train, y_test, subject_train, subject_test**: Original imported text files with the same name.
 
 - **train, test**: X and y's merged into their appropriate tables.
 
