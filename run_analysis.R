@@ -3,17 +3,21 @@ X_train <- read.table("X_train.txt")
 X_test <- read.table("X_test.txt")
 y_train <- read.table("y_train.txt")
 y_test <-  read.table("y_test.txt")
+subject_train <- read.table("subject_train.txt")
+subject_test <- read.table("subject_test.txt")
 
 # Merging the X and Y's.
-train <- cbind(X_train, y_train)
-test <- cbind(X_test, y_test)
-
-# Renaming the added columns as "outcome"
-colnames(train)[length(colnames(train))] <- "outcome"
-colnames(test)[length(colnames(test))] <- "outcome"
+train <- cbind(X_train, subject_train, y_train)
+test <- cbind(X_test, subject_test, y_test)
 
 # Merging the train and test datasets into one.
 mergedSamsung <- rbind(train, test)
+
+# Renaming the added y column as "outcome"
+colnames(mergedSamsung)[length(colnames(mergedSamsung))] <- "outcome"
+
+# Renaming the added subject column as "subject"
+colnames(mergedSamsung)[length(colnames(mergedSamsung))-1] <- "subject"
 
 # reading the features file into R.
 features <- read.table("features.txt")
@@ -30,9 +34,10 @@ meanandstdIndex <- sort(c(meanIndex, stdIndex))
 # filter the columns of the merged dataset by the wanted features.
 mergedSamsungFiltered <- mergedSamsung[, meanandstdIndex]
 
-# Let's don't forget the outcome column.
-mergedSamsungFiltered <- cbind(mergedSamsungFiltered, mergedSamsung$outcome)
+# Let's don't forget the outcome and subject columns.
+mergedSamsungFiltered <- cbind(mergedSamsungFiltered, mergedSamsung$subject, mergedSamsung$outcome)
 colnames(mergedSamsungFiltered)[length(colnames(mergedSamsungFiltered))] <- "outcome"
+colnames(mergedSamsungFiltered)[length(colnames(mergedSamsungFiltered))-1] <- "subject"
 
 # Factorizing the outcome column and change the observations to activity names.
 factorized <- factor(mergedSamsungFiltered$outcome)
@@ -44,12 +49,16 @@ mergedSamsungFiltered$outcome <- factorized
 # Changing the entire dataset's column names to names in the features file.
 colnames(mergedSamsungFiltered) <- features[meanandstdIndex ,]$V2
 
-# Let's don't forget naming the outcome column as "activity"
+# Let's not forget naming the outcome column as "activity" and subject column as "subject".
 colnames(mergedSamsungFiltered)[length(colnames(mergedSamsungFiltered))] <- "activity"
+colnames(mergedSamsungFiltered)[length(colnames(mergedSamsungFiltered))-1] <- "subject"
 
-# Creating a second tidy dataset that grops the first dataset by the activity column and the means of the other columns.
-groupedDF <- aggregate(mergedSamsungFiltered[, 1:length(colnames(mergedSamsungFiltered))-1], list(mergedSamsungFiltered$activity), mean)
-colnames(groupedDF)[1] <- "activity"
+# We will import the library dplyr for using group_by.
+library(dplyr)
+
+# codeblock below groups the mergedSamsungFiltered by two columns (subject and activity) and takes the mean of the rest.
+groupedDF <- mergedSamsungFiltered %>% group_by(subject, activity) %>% 
+  summarise(across(everything(), mean))
 
 # Exporting the second dataset.
 write.table(groupedDF, file = "samsungTidied.txt", row.names = FALSE)
